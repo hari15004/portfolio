@@ -12,7 +12,7 @@ export const stations: Station[] = [
     title: "Web",
     tagline: "Where sites come alive",
     description: "Fast, responsive websites and web apps built with Next.js and React.",
-    accent: "#c6ff3d",
+    accent: "#ff5c1f",
   },
   {
     id: "apps",

@@ -8,7 +8,38 @@ import { site } from "@/data/site";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [time, setTime] = useState("");
   const menu = useRef<HTMLDivElement>(null);
+  const progress = useRef<HTMLDivElement>(null);
+
+  // Local time (updates every 30s)
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: site.timezone,
+    });
+    const update = () => setTime(fmt.format(new Date()));
+    update();
+    const id = setInterval(update, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Scroll progress line
+  useEffect(() => {
+    const onScroll = () => {
+      const max =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = max > 0 ? window.scrollY / max : 0;
+      if (progress.current) {
+        progress.current.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Lock scroll + close on Escape while the menu is open
   useEffect(() => {
@@ -64,10 +95,19 @@ export default function Navbar() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-6 py-5 md:px-10">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          {site.name}
-          <span className="text-accent">.</span>
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link href="/" className="text-lg font-bold tracking-tight">
+            {site.name}
+            <span className="text-accent">.</span>
+          </Link>
+          <span
+            suppressHydrationWarning
+            className="hidden items-center gap-2 text-sm text-muted lg:flex"
+          >
+            <span className="size-1.5 rounded-full bg-accent" />
+            Indore {time}
+          </span>
+        </div>
 
         <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
           {site.nav.map((item) => (
@@ -95,6 +135,13 @@ export default function Navbar() {
         >
           {open ? "Close" : "Menu"}
         </button>
+
+        <div
+          ref={progress}
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-px origin-left bg-accent"
+          style={{ transform: "scaleX(0)" }}
+        />
       </header>
 
       <div
@@ -103,15 +150,18 @@ export default function Navbar() {
         className="fixed inset-0 z-[60] hidden flex-col justify-center gap-6 bg-bg px-6 md:hidden"
         style={{ clipPath: "inset(0 0 100% 0)" }}
       >
-        {site.nav.map((item) => (
+        {site.nav.map((item, i) => (
           <a
             key={item.href}
             data-item
             href={item.href}
             onClick={() => setOpen(false)}
-            className="font-bold leading-none"
+            className="flex items-baseline gap-4 font-bold leading-none"
             style={{ fontSize: "var(--fs-h2)" }}
           >
+            <span className="text-sm font-normal text-accent">
+              {String(i + 1).padStart(2, "0")}
+            </span>
             {item.label}
           </a>
         ))}

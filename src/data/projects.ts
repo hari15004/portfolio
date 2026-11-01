@@ -16,7 +16,7 @@ export const projects: Project[] = [
     description: "Placeholder. Replace with a real web project.",
     year: "2026",
     status: "Placeholder",
-    gradient: "linear-gradient(135deg, #1a1a1d, #c6ff3d33)",
+    gradient: "linear-gradient(135deg, #1a1a1d, #ff5c1f33)",
   },
   {
     slug: "project-two",
