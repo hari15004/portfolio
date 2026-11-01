@@ -10,6 +10,7 @@
   --border: #26262a;
   --accent: #ff5c1f;
   --accent-ink: #0a0a0b;
+  --portrait-glow: #ff5c1f55;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -32,6 +33,19 @@
   --fs-display: clamp(3rem, 1rem + 11vw, 11rem);
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f1eb;
+  --surface: #fffefa;
+  --surface-2: #e9e5db;
+  --text: #191816;
+  --muted: #77736b;
+  --border: #d8d3c8;
+  --accent: #c94324;
+  --accent-ink: #fffaf5;
+  --portrait-glow: #c943243d;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -50,15 +64,92 @@
 html {
   background: var(--bg);
   color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(
+      ellipse at 82% 10%,
+      color-mix(in srgb, var(--accent) 6%, transparent),
+      transparent 32%
+    ),
+    var(--bg);
   color: var(--text);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: var(--fs-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 500ms ease,
+    color 500ms ease;
+}
+
+.theme-lamp {
+  pointer-events: none;
+}
+
+.theme-lamp__cord {
+  width: 1px;
+  height: 2rem;
+  background: var(--border);
+  transition: background-color 400ms ease;
+}
+
+.theme-lamp__button {
+  pointer-events: auto;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--surface);
+  box-shadow: 0 4px 16px #00000012;
+  cursor: pointer;
+  transition:
+    color 400ms ease,
+    background-color 400ms ease,
+    border-color 400ms ease,
+    box-shadow 400ms ease,
+    transform 300ms ease;
+}
+
+.theme-lamp__button:hover {
+  color: var(--accent);
+  transform: translateY(3px);
+}
+
+.theme-lamp__button.is-on {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--accent) 25%, transparent),
+    0 0 64px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.theme-lamp__button.is-on:hover {
+  transform: translateY(3px) rotate(8deg);
+}
+
+.portrait-placeholder {
+  background:
+    radial-gradient(ellipse at 50% 42%, var(--portrait-glow), transparent 64%),
+    linear-gradient(145deg, var(--surface-2), var(--bg));
+}
+
+.portrait-color-reveal {
+  clip-path: circle(0 at var(--pointer-x, 50%) var(--pointer-y, 50%));
+  transition:
+    clip-path 180ms ease-out,
+    transform 700ms ease-out;
+}
+
+.group:hover .portrait-color-reveal,
+.group:focus-within .portrait-color-reveal {
+  clip-path: circle(1in at var(--pointer-x, 50%) var(--pointer-y, 50%));
 }
 
 ::selection {
@@ -96,5 +187,10 @@ html.lenis body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  body,
+  .theme-lamp__button {
+    transition-duration: 0.01ms !important;
   }
 }

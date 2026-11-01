@@ -5,12 +5,30 @@ import Link from "next/link";
 import { gsap } from "@/lib/animations/gsap";
 import { prefersReducedMotion } from "@/lib/animations/motion";
 import { site } from "@/data/site";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [time, setTime] = useState("");
+  const [navHidden, setNavHidden] = useState(false);
   const menu = useRef<HTMLDivElement>(null);
   const progress = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let previousY = window.scrollY;
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 80 || previousY - currentY > 8) {
+        setNavHidden(false);
+      } else if (currentY - previousY > 8) {
+        setNavHidden(true);
+      }
+      previousY = currentY;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Local time (updates every 30s)
   useEffect(() => {
@@ -94,7 +112,14 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-6 py-5 md:px-10">
+      <ThemeToggle hidden={navHidden && !open} />
+      <header
+        className={`fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-6 py-5 transition-[transform,opacity] duration-500 ease-out md:px-10 ${
+          navHidden && !open
+            ? "pointer-events-none -translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
+        }`}
+      >
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-bold tracking-tight">
             {site.name}
@@ -109,7 +134,7 @@ export default function Navbar() {
           </span>
         </div>
 
-        <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-8 pr-12 md:flex">
           {site.nav.map((item) => (
             <a
               key={item.href}

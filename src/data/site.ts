@@ -1,5 +1,6 @@
 export const site = {
   name: "Hari",
+  photo: "/hari.jpg",
   role: "Creative Developer / Designer / Builder",
   location: "Indore, India",
   timezone: "Asia/Kolkata",
